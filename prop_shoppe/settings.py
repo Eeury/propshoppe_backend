@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+from decouple import config
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
     'products',
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -100,3 +101,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 if not DEBUG:
     STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+CONSUMER_KEY = config("CONSUMER_KEY")
+CONSUMER_SECRET = config("CONSUMER_SECRET")
+SHORTCODE = config("SHORTCODE")
+PASSKEY = config("PASSKEY")
+CALLBACK_URL = config("CALLBACK_URL")
