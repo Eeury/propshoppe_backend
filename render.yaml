@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: prop-shoppe-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn prop_shoppe.wsgi:application
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: prop_shoppe.settings
+      - key: PYTHON_VERSION
+        value: 3.11
