@@ -1,10 +1,13 @@
 services:
   - type: web
     name: prop-shoppe-backend
-    env: python
+    env: docker
     plan: free
+    dockerfilePath: Dockerfile
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn prop_shoppe.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: prop_shoppe.settings
+
+
