@@ -5,6 +5,7 @@ from django.http import JsonResponse
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('products.urls')),
+    path('api/', include('payments.urls')),
 
     
     path('', lambda request: JsonResponse({

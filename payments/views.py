@@ -1,4 +1,3 @@
-
 from django.shortcuts import render
 from products.models import Product
 import json
@@ -20,25 +19,19 @@ def stk_push(request):
     if not phone or not product_id:
         return JsonResponse({"error": "Phone and product_id are required"}, status=400)
 
-    # Step 1: Get product price from DB
     try:
         product = Product.objects.get(id=product_id)
         amount = int(float(product.price))
     except Product.DoesNotExist:
         return JsonResponse({"error": "Product not found"}, status=404)
 
-    # Step 2: Generate password
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    password = base64.b64encode(
-        (settings.SHORTCODE + settings.PASSKEY + timestamp).encode()
-    ).decode()
+    password = base64.b64encode((settings.SHORTCODE + settings.PASSKEY + timestamp).encode()).decode()
 
-    # Step 3: Get access token
     access_token = get_access_token()
     api_url = "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
     headers = {"Authorization": f"Bearer {access_token}"}
 
-    # Step 4: Build payload
     payload = {
         "BusinessShortCode": settings.SHORTCODE,
         "Password": password,
@@ -53,7 +46,6 @@ def stk_push(request):
         "TransactionDesc": f"Payment for {product.name}"
     }
 
-
     res = requests.post(api_url, json=payload, headers=headers)
     mpesa_response = res.json()
 
@@ -67,31 +59,31 @@ def stk_push(request):
     return JsonResponse(mpesa_response)
 
 @csrf_exempt
-def stk_callback(request):
-    data = json.loads(request.body)
-    result = data.get("Body", {}).get("stkCallback", {})
-    result_code = result.get("ResultCode")
-    metadata = result.get("CallbackMetadata", {})
-
-    phone = None
-    amount = None
-    mpesa_receipt = None
+def mpesa_callback(request):
+    data = json.loads(request.body.decode('utf-8'))
+    body = data.get("Body", {}).get("stkCallback", {})
+    result_code = body.get("ResultCode")
+    checkout_id = body.get("CheckoutRequestID")
+    
+    try:
+        transaction = PaymentTransaction.objects.get(checkout_request_id=checkout_id)
+    except PaymentTransaction.DoesNotExist:
+        return JsonResponse({"error": "Transaction not found"}, status=404)
 
     if result_code == 0:
-        for item in metadata.get("Item", []):
-            if item["Name"] == "PhoneNumber":
-                phone = item["Value"]
-            elif item["Name"] == "Amount":
-                amount = item["Value"]
-            elif item["Name"] == "MpesaReceiptNumber":
-                mpesa_receipt = item["Value"]
+        metadata = body.get("CallbackMetadata", {})
+        mpesa_receipt = next((item["Value"] for item in metadata.get("Item", []) if item["Name"] == "MpesaReceiptNumber"), None)
+        amount = next((item["Value"] for item in metadata.get("Item", []) if item["Name"] == "Amount"), None)
+        phone = next((item["Value"] for item in metadata.get("Item", []) if item["Name"] == "PhoneNumber"), None)
 
-        PaymentTransaction.objects.filter(phone=phone, amount=amount).update(
-            status="Success", mpesa_receipt=mpesa_receipt
-        )
+        transaction.status = "Success"
+        transaction.mpesa_receipt = mpesa_receipt
+        transaction.save()
+
+        # Optional: Update related order or product status
     else:
-        # Mark as failed if needed
-        pass
+        transaction.status = "Failed"
+        transaction.save()
 
     return JsonResponse({"ResultCode": 0, "ResultDesc": "Accepted"})
 
@@ -112,28 +104,3 @@ def payment_status(request):
         "product": transaction.product.name if transaction.product else None,
         "receipt": transaction.mpesa_receipt
     })
-
-@csrf_exempt
-def mpesa_callback(request):
-    data = json.loads(request.body.decode('utf-8'))
-
-    body = data.get("Body", {}).get("stkCallback", {})
-    result_code = body.get("ResultCode")
-    checkout_id = body.get("CheckoutRequestID")
-    
-    try:
-        transaction = PaymentTransaction.objects.get(checkout_request_id=checkout_id)
-    except PaymentTransaction.DoesNotExist:
-        return JsonResponse({"error": "Transaction not found"}, status=404)
-
-    if result_code == 0:
-        # Payment was successful
-        mpesa_receipt = body["CallbackMetadata"]["Item"][1]["Value"]
-        transaction.status = "Success"
-        transaction.mpesa_receipt = mpesa_receipt
-    else:
-        # Payment failed or was cancelled
-        transaction.status = "Failed"
-
-    transaction.save()
-    return JsonResponse({"message": "Callback received successfully"})
