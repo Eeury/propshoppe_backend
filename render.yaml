@@ -5,7 +5,7 @@ services:
     plan: free
     dockerfilePath: Dockerfile
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn prop_shoppe.wsgi:application
+    startCommand: python manage.py initial_setup && gunicorn prop_shoppe.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: prop_shoppe.settings
