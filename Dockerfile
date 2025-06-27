@@ -7,4 +7,4 @@ COPY . .
 RUN python manage.py collectstatic --noinput
 ENV PYTHONUNBUFFERED=1
 EXPOSE 10000
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT prop_shoppe.wsgi:application"]
+CMD ["sh", "-c", "python manage.py initial_setup && gunicorn --bind 0.0.0.0:$PORT prop_shoppe.wsgi:application"]
