@@ -1,29 +1,35 @@
-from django.shortcuts import render
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework import status
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from .models import PaymentTransaction
 from products.models import Product
+from .utils import get_access_token
+import requests
 import json
 import base64
 from datetime import datetime
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.conf import settings
-from .utils import get_access_token
-from .models import PaymentTransaction
-import requests
 
-@csrf_exempt
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def stk_push(request):
-    data = json.loads(request.body)
+    data = request.data
     phone = data.get("phone")
     product_id = data.get("product_id")
 
     if not phone or not product_id:
-        return JsonResponse({"error": "Phone and product_id are required"}, status=400)
+        return Response({"error": "Phone and product_id are required"}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
         product = Product.objects.get(id=product_id)
         amount = int(float(product.price))
     except Product.DoesNotExist:
-        return JsonResponse({"error": "Product not found"}, status=404)
+        return Response({"error": "Product not found"}, status=status.HTTP_404_NOT_FOUND)
 
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     password = base64.b64encode((settings.SHORTCODE + settings.PASSKEY + timestamp).encode()).decode()
@@ -49,14 +55,19 @@ def stk_push(request):
     res = requests.post(api_url, json=payload, headers=headers)
     mpesa_response = res.json()
 
+    if 'errorCode' in mpesa_response:
+        return Response({"error": mpesa_response}, status=400)
+
     PaymentTransaction.objects.create(
         phone=phone,
         amount=amount,
         product=product,
-        checkout_request_id=mpesa_response.get("CheckoutRequestID")
+        checkout_request_id=mpesa_response.get("CheckoutRequestID"),
+        user=request.user
     )
 
-    return JsonResponse(mpesa_response)
+    return Response(mpesa_response)
+
 
 @csrf_exempt
 def mpesa_callback(request):
@@ -64,7 +75,7 @@ def mpesa_callback(request):
     body = data.get("Body", {}).get("stkCallback", {})
     result_code = body.get("ResultCode")
     checkout_id = body.get("CheckoutRequestID")
-    
+
     try:
         transaction = PaymentTransaction.objects.get(checkout_request_id=checkout_id)
     except PaymentTransaction.DoesNotExist:
@@ -79,27 +90,32 @@ def mpesa_callback(request):
         transaction.status = "Success"
         transaction.mpesa_receipt = mpesa_receipt
         transaction.save()
-
-        # Optional: Update related order or product status
     else:
         transaction.status = "Failed"
         transaction.save()
 
     return JsonResponse({"ResultCode": 0, "ResultDesc": "Accepted"})
 
-@csrf_exempt
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def payment_status(request):
-    phone = request.GET.get("phone")
+    phone = request.query_params.get("phone")
 
     if not phone:
-        return JsonResponse({"error": "Phone number required"}, status=400)
+        return Response({"error": "Phone number required"}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        transaction = PaymentTransaction.objects.filter(phone=phone).latest("timestamp")
+        transaction = PaymentTransaction.objects.filter(
+            phone=phone,
+            user=request.user
+        ).latest("timestamp")
     except PaymentTransaction.DoesNotExist:
-        return JsonResponse({"status": "Not Found"})
+        return Response({"status": "Not Found"})
+    except Exception as e:
+        return Response({"error": str(e)})
 
-    return JsonResponse({
+    return Response({
         "status": transaction.status,
         "product": transaction.product.name if transaction.product else None,
         "receipt": transaction.mpesa_receipt

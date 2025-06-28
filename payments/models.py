@@ -1,4 +1,4 @@
-
+from django.conf import settings
 from django.db import models
 
 class Product(models.Model):  
@@ -9,6 +9,13 @@ class PaymentTransaction(models.Model):
     phone = models.CharField(max_length=15)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
     mpesa_receipt = models.CharField(max_length=100, blank=True, null=True)
     checkout_request_id = models.CharField(max_length=100, blank=True, null=True)
     status = models.CharField(max_length=20, default="Pending")  

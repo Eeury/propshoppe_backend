@@ -9,6 +9,7 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'category', 'created_at']
+    list_display = ('id', 'name', 'price') 
 
 @admin.register(FlashSale)
 class FlashSaleAdmin(admin.ModelAdmin):
