@@ -1,3 +1,4 @@
+from .views import CreateOrderView, ListOrdersView
 from django.urls import path
 from . import views
 from .views import CustomAuthToken
@@ -21,5 +22,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('protected/', views.ProtectedTestView.as_view(), name='protected-test'),
-
+    path("orders/create/", views.create_order, name="create-order"),
+    path("orders/create/", CreateOrderView.as_view(), name="order-create"),
+    path("orders/", ListOrdersView.as_view(), name="order-list"),
 ]
