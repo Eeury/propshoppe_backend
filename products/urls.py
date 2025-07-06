@@ -1,7 +1,17 @@
-from .views import CreateOrderView, ListOrdersView
+from .views import (
+    CreateOrderView,
+    ListOrdersView,
+    CustomAuthToken,
+    CategoryListAPIView,
+    ProductListAPIView,
+    ProductDetailAPIView,
+    FlashSaleListAPIView,
+    PromotionListAPIView,
+    OrderListAPIView,
+    UserSignupAPIView,
+    ProtectedTestView,
+)
 from django.urls import path
-from . import views
-from .views import CustomAuthToken
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -9,20 +19,17 @@ from rest_framework_simplejwt.views import (
 )
 
 urlpatterns = [
-    path('categories/', views.CategoryListAPIView.as_view(), name='category-list'),
-    path('products/', views.ProductListAPIView.as_view(), name='product-list'),
-    path('products/<int:pk>/', views.ProductDetailAPIView.as_view(), name='product-detail'),
-    path('flash-sales/', views.FlashSaleListAPIView.as_view(), name='flash-sale-list'),
-    path('promotions/', views.PromotionListAPIView.as_view(), name='promotion-list'),
-    path('orders/', views.OrderListAPIView.as_view(), name='order-list'),
-    path('signup/', views.UserSignupAPIView.as_view(), name='user-signup'),
+    path('categories/', CategoryListAPIView.as_view(), name='category-list'),
+    path('', ProductListAPIView.as_view(), name='product-list'),  # Changed from 'products/'
+    path('<int:pk>/', ProductDetailAPIView.as_view(), name='product-detail'),  # Changed from 'products/<int:pk>/'
+    path('flash-sales/', FlashSaleListAPIView.as_view(), name='flash-sale-list'),
+    path('promotions/', PromotionListAPIView.as_view(), name='promotion-list'),
+    path('orders/', OrderListAPIView.as_view(), name='order-list'),
+    path('orders/create/', CreateOrderView.as_view(), name='order-create'),
+    path('signup/', UserSignupAPIView.as_view(), name='user-signup'),
     path('token-auth/', CustomAuthToken.as_view(), name='token-auth'),
-    # JWT endpoints
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
-    path('protected/', views.ProtectedTestView.as_view(), name='protected-test'),
-    path("orders/create/", views.create_order, name="create-order"),
-    path("orders/create/", CreateOrderView.as_view(), name="order-create"),
-    path("orders/", ListOrdersView.as_view(), name="order-list"),
+    path('protected/', ProtectedTestView.as_view(), name='protected-test'),
 ]
