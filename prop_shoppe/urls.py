@@ -1,15 +1,15 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.http import JsonResponse  
+from django.conf import settings
+from django.conf.urls.static import static
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
-    path("grappelli/", include("grappelli.urls")),
-    path('admin/', admin.site.urls),
-    path('api/products/', include('products.urls')),
-    path('api/payments/', include('payments.urls')),
-
-    path('', lambda request: JsonResponse({
-        "message": "✅ Backend is live!",
-        "status": "ok"
-    })),
-]
+       path('admin/', admin.site.urls),
+       path('api/token-auth/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+       path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+       path('api/', include('products.urls')),
+       path('api/', include('orders.urls')),
+       path('api/', include('chat.urls')),
+       path('api/signup/', include('accounts.urls')),
+   ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

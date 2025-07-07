@@ -20,8 +20,8 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('categories/', CategoryListAPIView.as_view(), name='category-list'),
-    path('', ProductListAPIView.as_view(), name='product-list'),  # Changed from 'products/'
-    path('<int:pk>/', ProductDetailAPIView.as_view(), name='product-detail'),  # Changed from 'products/<int:pk>/'
+    path('', ProductListAPIView.as_view(), name='product-list'),  
+    path('<int:pk>/', ProductDetailAPIView.as_view(), name='product-detail'), 
     path('flash-sales/', FlashSaleListAPIView.as_view(), name='flash-sale-list'),
     path('promotions/', PromotionListAPIView.as_view(), name='promotion-list'),
     path('orders/', OrderListAPIView.as_view(), name='order-list'),
