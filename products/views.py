@@ -2,8 +2,8 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from .models import Category, Product, FlashSale, Promotion, Order
-from .serializers import CategorySerializer, ProductSerializer, FlashSaleSerializer, PromotionSerializer, OrderSerializer
+from .models import Category, Product, FlashSale, Promotion
+from .serializers import CategorySerializer, ProductSerializer, FlashSaleSerializer, PromotionSerializer
 
 class CategoryListAPIView(generics.ListAPIView):
     queryset = Category.objects.all()
@@ -25,13 +25,6 @@ class PromotionListAPIView(generics.ListAPIView):
     serializer_class = PromotionSerializer
     permission_classes = [AllowAny]
 
-class OrderListAPIView(generics.ListAPIView):
-    serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        return Order.objects.filter(user=self.request.user)
-    
 from . import serializers
 from rest_framework import generics, status
 from rest_framework.response import Response

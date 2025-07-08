@@ -1,13 +1,10 @@
 from .views import (
-    CreateOrderView,
-    ListOrdersView,
     CustomAuthToken,
     CategoryListAPIView,
     ProductListAPIView,
     ProductDetailAPIView,
     FlashSaleListAPIView,
     PromotionListAPIView,
-    OrderListAPIView,
     UserSignupAPIView,
     ProtectedTestView,
 )
@@ -24,8 +21,6 @@ urlpatterns = [
     path('<int:pk>/', ProductDetailAPIView.as_view(), name='product-detail'), 
     path('flash-sales/', FlashSaleListAPIView.as_view(), name='flash-sale-list'),
     path('promotions/', PromotionListAPIView.as_view(), name='promotion-list'),
-    path('orders/', OrderListAPIView.as_view(), name='order-list'),
-    path('orders/create/', CreateOrderView.as_view(), name='order-create'),
     path('signup/', UserSignupAPIView.as_view(), name='user-signup'),
     path('token-auth/', CustomAuthToken.as_view(), name='token-auth'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
