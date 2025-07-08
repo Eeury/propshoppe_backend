@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'orders',
     'chat',
     'accounts',
+    'ckeditor',
 ]
 
 MIDDLEWARE = [
@@ -95,7 +96,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR / 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 SHORTCODE = config('SHORTCODE')
 PASSKEY = config('PASSKEY')
@@ -131,5 +132,16 @@ LOGGING = {
     'root': {
         'handlers': ['console'],
         'level': 'ERROR',
+    },
+}
+
+CKEDITOR_UPLOAD_PATH = 'uploads/'
+CKEDITOR_IMAGE_BACKEND = 'pillow'
+CKEDITOR_ALLOW_NONIMAGE_FILES = False
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
     },
 }
