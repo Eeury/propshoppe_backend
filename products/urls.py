@@ -1,6 +1,4 @@
 from .views import (
-    CreateOrderView,
-    ListOrdersView,
     CustomAuthToken,
     CategoryListAPIView,
     ProductListAPIView,
@@ -23,7 +21,10 @@ urlpatterns = [
     path('<int:pk>/', ProductDetailAPIView.as_view(), name='product-detail'), 
     path('flash-sales/', FlashSaleListAPIView.as_view(), name='flash-sale-list'),
     path('promotions/', PromotionListAPIView.as_view(), name='promotion-list'),
+<<<<<<< HEAD
     path('orders/create/', CreateOrderView.as_view(), name='order-create'),
+=======
+>>>>>>> 5c8dcb07b54a7f40de51739762ee08399ce646af
     path('signup/', UserSignupAPIView.as_view(), name='user-signup'),
     path('token-auth/', CustomAuthToken.as_view(), name='token-auth'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

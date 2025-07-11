@@ -17,7 +17,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
+<<<<<<< HEAD
         fields = ['id', 'name', 'description', 'price', 'category',  'image', 'created_at']
+=======
+        fields = ['id', 'name', 'price', 'category', 'image', 'created_at', 'description']
+>>>>>>> 5c8dcb07b54a7f40de51739762ee08399ce646af
 
 class FlashSaleSerializer(serializers.ModelSerializer):
     class Meta:
