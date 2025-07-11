@@ -1,29 +1,31 @@
 from django.contrib import admin
-from .models import Category, Product, FlashSale, Promotion, Order, OrderItem
+from .models import Category, Product, ProductImage, FlashSale, Promotion
+
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1 
+    fields = ['image'] 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'created_at']
+    list_display = ['name', 'created_at']  
+    list_filter = ['created_at']  
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'category', 'created_at']
-
+    list_filter = ['category', 'created_at']
+    search_fields = ['name', 'description']
+    fields = ['name', 'description', 'price', 'image', 'category', 'images']  
+    inlines = [ProductImageInline]  
+    readonly_fields = ['created_at']  
 @admin.register(FlashSale)
 class FlashSaleAdmin(admin.ModelAdmin):
-    list_display = ['product', 'discount_price', 'start_time', 'end_time']
+    list_display = ['product', 'discount_price', 'start_time', 'end_time', 'is_active']
+    list_filter = ['start_time', 'end_time']
 
 @admin.register(Promotion)
 class PromotionAdmin(admin.ModelAdmin):
-    list_display = ['name', 'discount_percentage', 'start_date', 'end_date']
-
-@admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'phone', 'total_amount', 'status', 'created_at']
-    search_fields = ['user__username', 'phone', 'mpesa_receipt']
-    list_filter = ['status', 'created_at']
-
-@admin.register(OrderItem)
-class OrderItemAdmin(admin.ModelAdmin):
-    list_display = ['order', 'product', 'quantity']
-    search_fields = ['order__id', 'product__name']
+    list_display = ['name', 'discount_percentage', 'start_date', 'end_date', 'is_active']
+    list_filter = ['start_date', 'end_date']
+    search_fields = ['name', 'description']
