@@ -5,21 +5,15 @@ from products.models import Product
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
-<<<<<<< HEAD
-    phone = models.CharField(max_length=20, blank=True, null=True)  # Added
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Added
-    mpesa_receipt = models.CharField(max_length=100, blank=True, null=True)  # Added
-=======
     phone = models.CharField(max_length=20, blank=True, null=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     mpesa_receipt = models.CharField(max_length=100, blank=True, null=True)
->>>>>>> 5c8dcb07b54a7f40de51739762ee08399ce646af
     status = models.CharField(max_length=50, default='pending')
     payment_status = models.CharField(max_length=50, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Order {self.id} by {self.user}"
+        return f"Order {self.pk} by {self.user}"
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
