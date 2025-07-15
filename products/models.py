@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from django.db import models
 
 class Category(models.Model):
@@ -45,8 +44,6 @@ class FlashSale(models.Model):
         now = timezone.now()
         return self.start_time <= now <= self.end_time
 
-=======
->>>>>>> 5c8dcb07b54a7f40de51739762ee08399ce646af
 class Promotion(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
@@ -57,9 +54,5 @@ class Promotion(models.Model):
     def is_active(self):
         from django.utils import timezone
         now = timezone.now()
-<<<<<<< HEAD
         return self.start_date <= now <= self.end_date
     
-=======
-        return self.start_date <= now <= self.end_date 
->>>>>>> 5c8dcb07b54a7f40de51739762ee08399ce646af
