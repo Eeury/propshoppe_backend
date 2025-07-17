@@ -105,7 +105,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 SHORTCODE = config('SHORTCODE', default='placeholder')
-PASSKEY = config('PASSKEY')
 CONSUMER_KEY = config('CONSUMER_KEY')
 CONSUMER_SECRET = config('CONSUMER_SECRET')
 CALLBACK_URL = config('CALLBACK_URL')
