@@ -104,11 +104,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-SHORTCODE = config('SHORTCODE', default='placeholder')
-CONSUMER_KEY = config('CONSUMER_KEY', default='')
-CONSUMER_SECRET = config('CONSUMER_SECRET', default='')
-CALLBACK_URL = config('CALLBACK_URL')
-
 from datetime import timedelta
 
 REST_FRAMEWORK = {
