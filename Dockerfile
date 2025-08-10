@@ -1,4 +1,3 @@
-
 FROM python:3.10-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -11,7 +10,6 @@ RUN apt-get update && apt-get install -y \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir setuptools
@@ -19,8 +17,9 @@ RUN pip install --no-cache-dir setuptools
 COPY . .
 
 RUN chmod +x build.sh
-
-RUN ./build.sh
+RUN ./build.sh  # This now runs only installs + collectstatic
 
 EXPOSE 8000
+
+# Run migrations at container startup
 CMD python manage.py migrate --noinput && gunicorn prop_shoppe.wsgi:application --bind 0.0.0.0:8000
