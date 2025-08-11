@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: propshoppe-backend
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn propshoppe_backend.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: propshoppe_backend.settings
+      - key: PYTHON_VERSION
+        value: 3.11
