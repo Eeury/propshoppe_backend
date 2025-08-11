@@ -2,7 +2,7 @@ services:
   - type: web
     name: propshoppe-backend
     env: python
-    buildCommand: "./build.sh"
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput
     startCommand: "gunicorn prop_shoppe.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
