@@ -3,7 +3,7 @@ services:
     name: propshoppe-backend
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn propshoppe_backend.wsgi:application --bind 0.0.0.0:$PORT"
+    startCommand: "gunicorn prop_shoppe.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: propshoppe_backend.settings
