@@ -1,3 +1,4 @@
+import dj_database_url
 from decouple import config
 from pathlib import Path
 import os
@@ -75,10 +76,11 @@ WSGI_APPLICATION = 'prop_shoppe.wsgi.application'
 import os
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL')
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,  
+        ssl_require=True
     )
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
