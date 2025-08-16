@@ -3,6 +3,7 @@ from django.db import models
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(upload_to='categories/%Y/%m/%d/', null=True, blank=True)
     
     class Meta:
         verbose_name_plural = "Categories"
@@ -38,8 +39,8 @@ class FlashSale(models.Model):
     discount_price = models.DecimalField(max_digits=10, decimal_places=2)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    image = models.ImageField(upload_to='flashsales/%Y/%m/%d/', null=True, blank=True)  
-    alt_text = models.CharField(max_length=125, blank=True)  
+    image = models.ImageField(upload_to='flashsales/%Y/%m/%d/', null=True, blank=True)
+    alt_text = models.CharField(max_length=125, blank=True)
     
     def is_active(self):
         from django.utils import timezone
@@ -52,11 +53,10 @@ class Promotion(models.Model):
     discount_percentage = models.IntegerField(default=0)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    image = models.ImageField(upload_to='promotions/%Y/%m/%d/', null=True, blank=True)  
-    alt_text = models.CharField(max_length=125, blank=True)  
+    image = models.ImageField(upload_to='promotions/%Y/%m/%d/', null=True, blank=True)
+    alt_text = models.CharField(max_length=125, blank=True)
     
     def is_active(self):
         from django.utils import timezone
         now = timezone.now()
         return self.start_date <= now <= self.end_date
-    

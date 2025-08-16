@@ -1,8 +1,6 @@
-from django.shortcuts import render
-from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from .models import Order
+from .models import Order, OrderItem
 from .serializers import OrderSerializer
 from products.models import Product
 
@@ -16,10 +14,13 @@ class OrderCreateView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = OrderSerializer
     def perform_create(self, serializer):
-        product_id = self.request.data.get('product_id')
-        quantity = self.request.data.get('quantity', 1)
-        product = Product.objects.get(id=product_id)
-        serializer.save(user=self.request.user, product=product, quantity=quantity)
-class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
-    serializer_class = OrderSerializer
+        items = self.request.data.get('items', [])
+        total_amount = 0
+        order = serializer.save(user=self.request.user, phone=self.request.data.get('phone', ''), county=self.request.data.get('county', ''), town=self.request.data.get('town', ''))
+        for item in items:
+            product = Product.objects.get(id=item['product_id'])
+            quantity = item.get('quantity', 1)
+            total_amount += product.price * quantity
+            OrderItem.objects.create(order=order, product=product, quantity=quantity)
+        order.total_amount = total_amount
+        order.save()

@@ -1,21 +1,24 @@
-from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import generics, status
 from rest_framework.response import Response
-from django.contrib.auth.models import User
+from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.models import User
+from .serializers import UserSerializer
 
 class SignupView(generics.CreateAPIView):
-    def post(self, request):
-        username = request.data.get('username')
-        email = request.data.get('email')
-        password = request.data.get('password')
-        if User.objects.filter(username=username).exists():
-            return Response({'message': 'User already exists'}, status=status.HTTP_400_BAD_REQUEST)
-        user = User.objects.create_user(username=username, email=email, password=password)
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'token': str(refresh.access_token),
-            'user': {'username': user.username, 'email': user.email}
-        }, status=status.HTTP_201_CREATED)
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'message': 'User created successfully',
+                'user': {'id': user.id, 'username': user.username, 'email': user.email},
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
