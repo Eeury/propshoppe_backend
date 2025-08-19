@@ -1,37 +1,6 @@
 from rest_framework import serializers
-from .models import Category, Product, FlashSale, Promotion, ProductImage
 from django.contrib.auth.models import User
-
-class CategorySerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(allow_null=True, required=False)
-    class Meta:
-        model = Category
-        fields = ['id', 'name', 'created_at', 'image']
-
-class ProductImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProductImage
-        fields = ['image', 'alt_text']
-
-class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True)
-    images = ProductImageSerializer(many=True, read_only=True)
-    class Meta:
-        model = Product
-        fields = ['id', 'name', 'description', 'price', 'category', 'image', 'images', 'created_at']
-
-class FlashSaleSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(read_only=True)
-    image = serializers.ImageField(allow_null=True, required=False)
-    class Meta:
-        model = FlashSale
-        fields = ['id', 'product', 'discount_price', 'start_time', 'end_time', 'is_active', 'image', 'alt_text']
-
-class PromotionSerializer(serializers.ModelSerializer):
-    image = serializers.ImageField(allow_null=True, required=False)
-    class Meta:
-        model = Promotion
-        fields = ['id', 'name', 'description', 'discount_percentage', 'start_date', 'end_date', 'is_active', 'image', 'alt_text']
+from .models import Product, Category, ProductImage, FlashSale, Promotion
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,3 +15,46 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return user
+
+class CategorySerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(use_url=True)
+
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'image']
+
+class ProductSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(use_url=True)
+    category = CategorySerializer(read_only=True)
+    category_id = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all(), source='category', write_only=True
+    )
+
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'description', 'price', 'image', 'category', 'category_id', 'created_at']
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(use_url=True)
+
+    class Meta:
+        model = ProductImage
+        fields = ['id', 'product', 'image', 'alt_text']
+
+class FlashSaleSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(use_url=True)
+    product = ProductSerializer(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(), source='product', write_only=True
+    )
+
+    class Meta:
+        model = FlashSale
+        fields = ['id', 'product', 'product_id', 'discount_price', 'start_time', 'end_time', 'image', 'alt_text']
+
+class PromotionSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(use_url=True)
+
+    class Meta:
+        model = Promotion
+        fields = ['id', 'name', 'description', 'discount_percentage', 'start_date', 'end_date', 'image', 'alt_text']

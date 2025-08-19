@@ -1,9 +1,18 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
+from django.core.validators import FileExtensionValidator
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    image = models.ImageField(upload_to='categories/%Y/%m/%d/', null=True, blank=True)
+    image = CloudinaryField(
+        'image',
+        folder='categories',
+        null=True,
+        blank=True,
+        default='categories/placeholder',
+        allowed_formats=['jpg', 'jpeg', 'png', 'gif']
+    )
     
     class Meta:
         verbose_name_plural = "Categories"
@@ -15,7 +24,14 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.ImageField(upload_to='products/%Y/%m/%d/', null=True, blank=True)
+    image = CloudinaryField(
+        'image',
+        folder='products',
+        null=True,
+        blank=True,
+        default='products/placeholder',
+        allowed_formats=['jpg', 'jpeg', 'png', 'gif']
+    )
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -24,7 +40,11 @@ class Product(models.Model):
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='product_images/%Y/%m/%d/')
+    image = CloudinaryField(
+        'image',
+        folder='product_images',
+        allowed_formats=['jpg', 'jpeg', 'png', 'gif']
+    )
     alt_text = models.CharField(max_length=125, blank=True)
     
     class Meta:
@@ -39,7 +59,14 @@ class FlashSale(models.Model):
     discount_price = models.DecimalField(max_digits=10, decimal_places=2)
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    image = models.ImageField(upload_to='flashsales/%Y/%m/%d/', null=True, blank=True)
+    image = CloudinaryField(
+        'image',
+        folder='flashsales',
+        null=True,
+        blank=True,
+        default='flashsales/placeholder',
+        allowed_formats=['jpg', 'jpeg', 'png', 'gif']
+    )
     alt_text = models.CharField(max_length=125, blank=True)
     
     def is_active(self):
@@ -53,7 +80,14 @@ class Promotion(models.Model):
     discount_percentage = models.IntegerField(default=0)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
-    image = models.ImageField(upload_to='promotions/%Y/%m/%d/', null=True, blank=True)
+    image = CloudinaryField(
+        'image',
+        folder='promotions',
+        null=True,
+        blank=True,
+        default='promotions/placeholder',
+        allowed_formats=['jpg', 'jpeg', 'png', 'gif']
+    )
     alt_text = models.CharField(max_length=125, blank=True)
     
     def is_active(self):
