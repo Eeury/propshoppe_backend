@@ -7,6 +7,13 @@ class ProductImageInline(admin.TabularInline):
     extra = 1
     fields = ['image', 'alt_text']
 
+    def save_model(self, request, obj, form, change):
+        try:
+            super().save_model(request, obj, form, change)
+        except Exception as e:
+            self.message_user(request, f"Error saving ProductImage: {e}", level='error')
+            raise
+
     def delete_model(self, request, obj):
         if obj.image:
             try:
@@ -28,6 +35,13 @@ class ProductAdmin(admin.ModelAdmin):
     fields = ['name', 'description', 'price', 'image', 'category']
     inlines = [ProductImageInline]
     readonly_fields = ['created_at']
+
+    def save_model(self, request, obj, form, change):
+        try:
+            super().save_model(request, obj, form, change)
+        except Exception as e:
+            self.message_user(request, f"Error saving Product: {e}", level='error')
+            raise
 
     def delete_model(self, request, obj):
         if obj.image:
@@ -53,6 +67,13 @@ class FlashSaleAdmin(admin.ModelAdmin):
     fields = ['product', 'discount_price', 'start_time', 'end_time', 'image', 'alt_text']
     readonly_fields = ['is_active']
 
+    def save_model(self, request, obj, form, change):
+        try:
+            super().save_model(request, obj, form, change)
+        except Exception as e:
+            self.message_user(request, f"Error saving FlashSale: {e}", level='error')
+            raise
+
     def delete_model(self, request, obj):
         if obj.image:
             try:
@@ -68,6 +89,13 @@ class PromotionAdmin(admin.ModelAdmin):
     search_fields = ['name', 'description']
     fields = ['name', 'description', 'discount_percentage', 'start_date', 'end_date', 'image', 'alt_text']
     readonly_fields = ['is_active']
+
+    def save_model(self, request, obj, form, change):
+        try:
+            super().save_model(request, obj, form, change)
+        except Exception as e:
+            self.message_user(request, f"Error saving Promotion: {e}", level='error')
+            raise
 
     def delete_model(self, request, obj):
         if obj.image:
