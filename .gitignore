@@ -1,26 +1,3 @@
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.db
-*.sqlite3
-
-# Django
-*.log
-local_settings.py
-media/
-staticfiles/
-
-# Virtual environment
 venv/
-env/
 .env
 
-# IDE
-.idea/
-*.sublime*
-.vscode/
-
-# Miscellaneous
-*.DS_Store
