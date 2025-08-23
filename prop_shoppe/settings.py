@@ -2,6 +2,8 @@ import dj_database_url
 from decouple import config
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,10 +43,9 @@ if not all([os.getenv('CLOUDINARY_CLOUD_NAME'), os.getenv('CLOUDINARY_API_KEY'),
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#MEDIA_URL = '/media/'
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
@@ -82,8 +83,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'prop_shoppe.wsgi.application'
 
+DATABASE_URL = os.getenv('DATABASE_URL')
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.sqlite3', conn_max_age=600)
+    'default': dj_database_url.config(default=DATABASE_URL, conn_max_age=600)
 }
 
 AUTH_PASSWORD_VALIDATORS = [
